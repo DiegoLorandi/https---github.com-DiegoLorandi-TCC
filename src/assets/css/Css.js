@@ -6,11 +6,6 @@ const css = StyleSheet.create({
       alignItems: 'center',
       marginTop:40
     },
-    loginButtom:{
-        backgroundColor: 'orange',
-        padding:20,
-        marginTop:100
-    }
   });
   
 export {css};
