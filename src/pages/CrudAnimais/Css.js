@@ -5,7 +5,7 @@ const css = StyleSheet.create({
         margin:35,
         paddingTop:20,
         alignItems:'center',
-        backgroundColor:'#FDF5E6'
+        backgroundColor:'red'
     }
 });
   
