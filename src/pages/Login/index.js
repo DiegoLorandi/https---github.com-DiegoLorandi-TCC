@@ -1,8 +1,18 @@
 import { View, Text, TextInput, TouchableOpacity,TouchableHighlight } from 'react-native'
 import React from 'react'
 import {css} from './Css'
-import {cssGeral} from '../../assets/css/Css'
 import * as Animatable from 'react-native-animatable'
+
+const Entrar = ({ navigation }) => {
+  return (
+    <Button
+      title="Entrar"
+      onPress={() =>
+        navigation.navigate('Welcome')
+      }
+    />
+  );
+};
 
 export default function Login() {
   var [ isPress, setIsPress ] = React.useState(false);
@@ -30,7 +40,7 @@ export default function Login() {
             placeholder='Digite sua senha' 
           />
         <View style={css.btnContainer}>
-          <TouchableOpacity style={css.btnLogin}>
+          <TouchableOpacity style={css.btnLogin} onPress={()=> console.log("Apertou o botão")}>
             <Text style={css.btnTextLogin}>Entrar</Text>
           </TouchableOpacity>
 

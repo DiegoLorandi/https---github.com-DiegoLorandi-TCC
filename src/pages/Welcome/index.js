@@ -1,10 +1,10 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text} from 'react-native'
+import * as React from 'react';
 
 export default function Welcome() {
   return (
     <View>
-      <Text>Tela inicial do app</Text>
+      <Text>Tela Principal</Text>
     </View>
   )
 }
