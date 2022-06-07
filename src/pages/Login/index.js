@@ -3,18 +3,8 @@ import React from 'react'
 import {css} from './Css'
 import * as Animatable from 'react-native-animatable'
 
-const Entrar = ({ navigation }) => {
-  return (
-    <Button
-      title="Entrar"
-      onPress={() =>
-        navigation.navigate('Welcome')
-      }
-    />
-  );
-};
 
-export default function Login() {
+const Login = ({ navigation }) => {
   var [ isPress, setIsPress ] = React.useState(false);
 
   var touchProps = {    
@@ -40,7 +30,7 @@ export default function Login() {
             placeholder='Digite sua senha' 
           />
         <View style={css.btnContainer}>
-          <TouchableOpacity style={css.btnLogin} onPress={()=> console.log("Apertou o botão")}>
+          <TouchableOpacity style={css.btnLogin} onPress={ navigation.navigate('Home')}>
             <Text style={css.btnTextLogin}>Entrar</Text>
           </TouchableOpacity>
 
@@ -52,4 +42,5 @@ export default function Login() {
 
     </View>
   );
-}
+};
+export default Login

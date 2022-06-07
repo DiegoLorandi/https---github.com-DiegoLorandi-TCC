@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, TouchableHighlight, StyleSheet } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, TouchableHighlight } from 'react-native'
 import React, { useState } from 'react'
 import {Picker} from '@react-native-picker/picker';
 import Radio from '../../components/Ratio'
@@ -7,13 +7,12 @@ import * as Animatable from 'react-native-animatable'
 
 
 
-export default function CrudAnimais() {
-  const [selected, setSelected] = useState(0);
-  var state = {raca:''};
+export default function CadastrarComprador() {
+  
   return (
     <View style={css.container}>
       <Animatable.View animation="fadeInUp" delay={500}>
-        <Text>Cadastro de Animais</Text>
+        <Text>Cadastro Compradores</Text>
       </Animatable.View>
 
       <Animatable.View animation="fadeInUp" style={css.formLogin}>

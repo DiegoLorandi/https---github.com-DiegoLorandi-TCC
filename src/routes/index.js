@@ -1,20 +1,36 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { NavigationContainer } from '@react-navigation/native';
 import Home from '../pages/Home'
+import Login from '../pages/Login'
 import AnimaisMain from '../pages/AnimaisMain'
 import CompradoresMain from '../pages/CompradoresMain'
 import CadastrarAnimal from '../pages/CadastrarAnimal'
 import CadastrarComprador from '../pages/CadastrarComprador'
 import ConsultarInfo from '../pages/ConsultarInfo'
 import GerenciarAnimais from '../pages/GerenciarAnimais'
-
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 
 const Stack = createNativeStackNavigator();
 
 
-const HomeScreen = () => (
+const TesteScreen = () => (
+    <NavigationContainer independent={true}>
+        <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen
+                name="Login"
+                component={Login}
+            />
+            <Stack.Screen
+                name="Home"
+                component={Home}
+            />
+        </Stack.Navigator>
+    </NavigationContainer>
+);
+export default TesteScreen
+
+{/*const HomeScreen = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="Home"
@@ -69,9 +85,9 @@ const GerenciarAnimaisScreen = () => (
       component={GerenciarAnimais}
     />
   </Stack.Navigator>
-);
+);*/}
 
-const App = () => {
+{/*const App = () => {
   return (
       <Tab.Navigator initialRouteName="Home">
         <Tab.Screen name="AnimaisMain" component={AnimaisMainScreen} options={{ headerShown: false }}/>
@@ -81,4 +97,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App;*/}
