@@ -4,9 +4,9 @@ const Home = ({ navigation }) => {
   return (
     <View>
       <Button
-      title="Ir para Login"
+      title="Ir para ConsultarInfo"
       onPress={() =>
-        navigation.navigate('Login')
+        navigation.navigate('ConsultarInfo')
       }
       />
     </View>

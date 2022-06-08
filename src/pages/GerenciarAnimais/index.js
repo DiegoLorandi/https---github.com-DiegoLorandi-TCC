@@ -8,7 +8,8 @@ import * as Animatable from 'react-native-animatable'
 
 
 export default function GerenciarAnimais() {
-  
+  const [selected, setSelected] = useState(0);
+  var state = {raca:''};
   return (
     <View style={css.container}>
       <Animatable.View animation="fadeInUp" delay={500}>
