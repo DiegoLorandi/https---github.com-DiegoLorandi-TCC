@@ -2,34 +2,35 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Home from '../pages/Home'
 import Login from '../pages/Login'
+
+const Stack = createNativeStackNavigator();
+
+const TesteScreen = () => (
+    <NavigationContainer independent={true}>
+        <Stack.Navigator initialRouteName="Login">
+            <Stack.Screen
+                name="Home"
+                component={Home}
+            />
+            <Stack.Screen
+                name="Login"
+                component={Login}
+            />
+        </Stack.Navigator>
+    </NavigationContainer>
+);
+export default TesteScreen 
+
+{/*
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+const Tab = createBottomTabNavigator();
 import AnimaisMain from '../pages/AnimaisMain'
 import CompradoresMain from '../pages/CompradoresMain'
 import CadastrarAnimal from '../pages/CadastrarAnimal'
 import CadastrarComprador from '../pages/CadastrarComprador'
 import ConsultarInfo from '../pages/ConsultarInfo'
 import GerenciarAnimais from '../pages/GerenciarAnimais'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-const Tab = createBottomTabNavigator();
-
-const Stack = createNativeStackNavigator();
-
-
-const TesteScreen = () => (
-    <NavigationContainer independent={true}>
-        <Stack.Navigator initialRouteName="Home">
-            <Stack.Screen
-                name="Login"
-                component={Login}
-            />
-            <Stack.Screen
-                name="Home"
-                component={Home}
-            />
-        </Stack.Navigator>
-    </NavigationContainer>
-);
-export default TesteScreen
-
+*/}
 {/*const HomeScreen = () => (
   <Stack.Navigator>
     <Stack.Screen
