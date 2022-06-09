@@ -4,9 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AnimaisMain from '../pages/AnimaisMain'
 import CompradoresMain from '../pages/CompradoresMain'
 import CadastrarAnimal from '../pages/CadastrarAnimal'
-import CadastrarComprador from '../pages/CadastrarComprador'
-import ConsultarInfo from '../pages/ConsultarInfo'
+import ConsultarAnimal from '../pages/ConsultarAnimal'
 import GerenciarAnimais from '../pages/GerenciarAnimais'
+import CadastrarComprador from '../pages/CadastrarComprador'
+import GerenciarComprador from '../pages/GerenciarComprador'
+import ConsultarComprador from '../pages/ConsultarComprador'
+import GerarRelatorios from '../pages/GerarRelatorios'
 import Home from '../pages/Home'
 import Login from '../pages/Login'
 
@@ -36,102 +39,49 @@ const MyStack = () => (
       name="AnimaisMain"
       component={AnimaisMain}
     />
+
     <Stack.Screen
       name="CompradoresMain"
       component={CompradoresMain}
     />
+
     <Stack.Screen
-      name="CadastrarAnimal"
+      name="Cadastrar Animal"
       component={CadastrarAnimal}
     />
+
     <Stack.Screen
-      name="CadastrarComprador"
-      component={CadastrarComprador}
+      name="Consultar Animal"
+      component={ConsultarAnimal}
     />
+
     <Stack.Screen
-      name="ConsultarInfo"
-      component={ConsultarInfo}
-    />
-    <Stack.Screen
-      name="GerenciarAnimais"
+      name="Gerenciar Animais"
       component={GerenciarAnimais}
     />
 
+    <Stack.Screen
+      name="Cadastrar Comprador"
+      component={CadastrarComprador}
+    />
 
+    <Stack.Screen
+      name="Consultar Comprador"
+      component={ConsultarComprador}
+    />
+
+    <Stack.Screen
+      name="Gerenciar Comprador"
+      component={GerenciarComprador}
+    />
+
+    <Stack.Screen
+      name="Gerar Relatórios"
+      component={GerarRelatorios}
+    />
 
         </Stack.Navigator>
     </NavigationContainer>
 );
 export default MyStack 
 
-{/*
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-const Tab = createBottomTabNavigator();
-import AnimaisMain from '../pages/AnimaisMain'
-import CompradoresMain from '../pages/CompradoresMain'
-import CadastrarAnimal from '../pages/CadastrarAnimal'
-import CadastrarComprador from '../pages/CadastrarComprador'
-import ConsultarInfo from '../pages/ConsultarInfo'
-import GerenciarAnimais from '../pages/GerenciarAnimais'
-*/}
-{/*
-const AnimaisMainScreen = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="AnimaisMain"
-      component={AnimaisMain}
-    />
-  </Stack.Navigator>
-);
-const CompradoresMainScreen = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="CompradoresMain"
-      component={CompradoresMain}
-    />
-  </Stack.Navigator>
-);
-const CadastrarAnimalScreen = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="CadastrarAnimal"
-      component={CadastrarAnimal}
-    />
-  </Stack.Navigator>
-);
-const CadastrarCompradorScreen = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="CadastrarComprador"
-      component={CadastrarComprador}
-    />
-  </Stack.Navigator>
-);
-const ConsultarInfoScreen = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="ConsultarInfo"
-      component={ConsultarInfo}
-    />
-  </Stack.Navigator>
-);
-const GerenciarAnimaisScreen = () => (
-  <Stack.Navigator>
-    <Stack.Screen
-      name="GerenciarAnimais"
-      component={GerenciarAnimais}
-    />
-  </Stack.Navigator>
-);*/}
-
-{/*const App = () => {
-  return (
-      <Tab.Navigator initialRouteName="Home">
-        <Tab.Screen name="AnimaisMain" component={AnimaisMainScreen} options={{ headerShown: false }}/>
-        <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }}/>
-        <Tab.Screen name="CompradoresMain" component={CompradoresMainScreen} options={{ headerShown: false }}/>
-      </Tab.Navigator>
-  );
-};
-
-export default App;*/}

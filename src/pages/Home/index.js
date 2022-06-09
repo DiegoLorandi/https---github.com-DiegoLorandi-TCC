@@ -1,13 +1,13 @@
-import { View, Button} from 'react-native'
+import { View, Button } from 'react-native'
 import * as React from 'react';
 const Home = ({ navigation }) => {
   return (
     <View>
       <Button
-      title="Ir para ConsultarInfo"
-      onPress={() =>
-        navigation.navigate('ConsultarInfo')
-      }
+        title="Gerar Relatórios"
+        onPress={() =>
+          navigation.navigate('Gerar Relatórios')
+        }
       />
     </View>
   );
