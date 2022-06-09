@@ -13,6 +13,7 @@ const Login = ({ navigation }) => {
     onShowUnderlay: () => setIsPress(true),
     onPress: () => console.log(''),
   };
+  var [isPassword, setIsPassword] = React.useState(true)
   return (
     <View style={css.blocoLogin}>
       <Animatable.View animation="fadeInLeft" delay={500} style={css.header}>
@@ -24,10 +25,14 @@ const Login = ({ navigation }) => {
         <TextInput style={css.input}
           placeholder='Digite seu e-mail'
         />
+
+        
         <Text style={css.title}>Senha</Text>
         <TextInput style={css.input}
           placeholder='Digite sua senha'
+          secureTextEntry={isPassword}
         />
+        
         <View style={css.btnContainer}>
           <Button
             title="Ir para Home"
