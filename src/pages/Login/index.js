@@ -1,4 +1,4 @@
-import { View, Button, Text, TextInput, TouchableOpacity, TouchableHighlight } from 'react-native'
+import { View, Button, Text, TextInput, TouchableHighlight } from 'react-native'
 import * as React from 'react';
 import { css } from './Css'
 import * as Animatable from 'react-native-animatable'
