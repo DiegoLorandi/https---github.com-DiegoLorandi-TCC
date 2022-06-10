@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { View, Button} from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -26,7 +27,9 @@ const NavigationStack = () => (
         activeBackgroundColor: '#4682B4',
         inactiveBackgroundColor: '#4682B4',
       }}
+      initialRouteName="Home"
   >
+  
     <Tab.Screen 
       name="Animais" 
       component={AnimaisMain} 

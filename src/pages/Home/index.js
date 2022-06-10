@@ -1,6 +1,14 @@
 import { View, Button } from 'react-native'
 import * as React from 'react';
+import { auth } from '../../../firebase';
 const Home = ({ navigation }) => {
+  const handleSignOut = () => {
+    auth
+    .signOut()
+    .then(() => {
+      navigation.replace('Login')
+    }).catch((error) => alert(error.message))
+  }
   return (
     <View>
       <Button
@@ -8,6 +16,10 @@ const Home = ({ navigation }) => {
         onPress={() =>
           navigation.navigate('Gerar Relatórios')
         }
+      />
+      <Button
+        title="Sair"
+        onPress={handleSignOut}
       />
     </View>
   );

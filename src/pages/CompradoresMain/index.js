@@ -2,7 +2,6 @@ import { View, Button } from 'react-native'
 import React from 'react'
 
 
-
 const CompradoresMain = ({ navigation }) => {
   return (
     <View >
