@@ -13,6 +13,7 @@ import CadastrarComprador from '../pages/CadastrarComprador'
 import GerenciarComprador from '../pages/GerenciarComprador'
 import ConsultarComprador from '../pages/ConsultarComprador'
 import GerarRelatorios from '../pages/GerarRelatorios'
+import AtualizarPeso from '../pages/AtualizarPeso'
 import Home from '../pages/Home'
 import Login from '../pages/Login'
 
@@ -90,6 +91,11 @@ const MyStack = () => (
       <Stack.Screen
         name="Cadastrar Animal"
         component={CadastrarAnimal}
+      />
+
+      <Stack.Screen
+        name="Atualizar Peso"
+        component={AtualizarPeso}
       />
 
       <Stack.Screen

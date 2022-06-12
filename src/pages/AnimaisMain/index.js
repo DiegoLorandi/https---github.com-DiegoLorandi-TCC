@@ -8,17 +8,26 @@ const AnimaisMain = ({ navigation }) => {
   return (
     <View>
       <Button
-        title="Consultar Animal"
-        onPress={() =>
-          navigation.navigate('Consultar Animal')
-        }
-      />
-      <Button
         title="Cadastrar Animal"
         onPress={() =>
           navigation.navigate('Cadastrar Animal')
         }
       />
+
+      <Button
+        title="Consultar Animal"
+        onPress={() =>
+          navigation.navigate('Consultar Animal')
+        }
+      />
+
+      <Button
+        title="Atualizar Peso"
+        onPress={() =>
+          navigation.navigate('Atualizar Peso')
+        }
+      />
+
       <Button
         title="Gerenciar Animais"
         onPress={() =>
