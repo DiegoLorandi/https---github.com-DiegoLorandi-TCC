@@ -31,13 +31,19 @@ const ConsultarAnimal = ({ navigation }) => {
       var sexoAnimalBuscado
       var racaAnimalBuscado
       var statusAnimalBuscado
+      var docId = ""
+      var pesoId
       getAnimais.forEach(doc => {
+        docId = doc.id
+        pesoId = doc.data().pesoId
         dataAnimalBuscado = doc.data().dataNascimento;
-        pesoAnimalBuscado = doc.data().pesoAnimal;
         sexoAnimalBuscado = doc.data().sexoAnimal;
         racaAnimalBuscado = doc.data().racaAnimal;
         statusAnimalBuscado = doc.data().statusAnimal;
       });
+      var getPesoAnimal = await animaisCollection.doc(docId).collection('pesoAnimal').doc(''+pesoId+'').get()
+      pesoAnimalBuscado = getPesoAnimal.data().pesoAnimal
+
       setShowDataAnimal(dataAnimalBuscado)
       setShowPesoAnimal(pesoAnimalBuscado)
       setShowSexoAnimal(sexoAnimalBuscado)
@@ -51,15 +57,27 @@ const ConsultarAnimal = ({ navigation }) => {
   const Update = async () => {
       const animaisCollection = db.collection('animais');
       try {
+        var docId = ""
+        var pesoId
         await animaisCollection.where('idAnimal', '==', '' + fetchIdAnimal + '').get().then(function(querySnapshot) {
           querySnapshot.forEach(function(doc) {
+              docId = doc.id
+              pesoId = doc.data().pesoId//recebe o pesoId que está no documento
               newDataAnimal ? doc.ref.update({dataNascimento: newDataAnimal}) : "";
-              newPesoAnimal ? doc.ref.update({pesoAnimal: newPesoAnimal}) : "";
               newRacaAnimal ? doc.ref.update({racaAnimal: newRacaAnimal}) : "";
               newSexoAnimal ? doc.ref.update({sexoAnimal: newSexoAnimal}) : "";
               newStatusAnimal ? doc.ref.update({statusAnimal: newStatusAnimal}) : "";
           })
         })
+        if(newPesoAnimal != showPesoAnimal && newPesoAnimal != null){
+          var newPesoId = pesoId + 1;//soma 1 na variável pesoId
+          await animaisCollection.doc(docId).set({ pesoId: newPesoId }, { merge: true });//atualiza o pesoId do documento do animal
+          await db.collection("animais").doc(docId).collection("pesoAnimal").doc(''+newPesoId+'').set({
+            idAnimal: fetchIdAnimal,
+            pesoAnimal: newPesoAnimal,
+            data: new Date()
+          })
+        }
         alert("Dados Editados com sucesso")
       } catch (error) {
         alert(error)

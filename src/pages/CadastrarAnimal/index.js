@@ -1,5 +1,5 @@
 import { db } from '../../../firebase'
-import { View, Text, TextInput, TouchableOpacity, TouchableHighlight } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import MaskInput from 'react-native-mask-input';
 import Radio from '../../components/Ratio'
@@ -15,20 +15,30 @@ const CadastrarAnimal = ({ navigation }) => {
   const [newRacaAnimal, setNewRacaAnimal] = useState("");
   const [newSexoAnimal, setNewSexoAnimal] = useState("Macho");
   const [newStatusAnimal, setNewStatusAnimal] = useState("");
+
+
   const Create = async () => {
     const animaisCollection = db.collection('animais');
     if (newIdAnimal == "" || newPesoAnimal == "" || newDataAnimal == "" || newRacaAnimal == "" || newSexoAnimal == "" || newStatusAnimal == "") {
       alert("Preencha todos os dados corretamente")
     } else {
       try {
+        var docId = ""
         await animaisCollection.add({
+          pesoId: 1,
           idAnimal: newIdAnimal,
           dataNascimento: newDataAnimal,
-          pesoAnimal: newPesoAnimal,
           sexoAnimal: newSexoAnimal,
           racaAnimal: newRacaAnimal,
           statusAnimal: newStatusAnimal,
-        });
+        }).then((data) => {
+          docId = data.id
+        })
+        db.collection("animais").doc(docId).collection("pesoAnimal").doc("1").set({
+          idAnimal: newIdAnimal,
+          pesoAnimal: newPesoAnimal,
+          data: new Date()
+        })
         alert("Animal cadastrado")
       } catch (error) {
         alert(error.message)

@@ -21,5 +21,5 @@ if (firebase.apps.length === 0) {
 
 const db = app.firestore();
 const auth = firebase.auth();
-
+firebase.firestore().settings({ experimentalForceLongPolling: true })
 export { db, auth };
