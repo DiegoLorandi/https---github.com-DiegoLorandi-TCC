@@ -50,15 +50,20 @@ const ConsultarAnimal = ({ navigation }) => {
   }
   const Update = async () => {
       const animaisCollection = db.collection('animais');
-      var getAnimais = await animaisCollection.where('idAnimal', '==', '' + fetchIdAnimal + '').get().then(function(querySnapshot) {
-        querySnapshot.forEach(function(doc) {
-            doc.ref.update({dataNascimento: newDataAnimal})
-            doc.ref.update({pesoAnimal: newPesoAnimal})
-            doc.ref.update({racaAnimal: newRacaAnimal})
-            doc.ref.update({sexoAnimal: newSexoAnimal})
-            doc.ref.update({statusAnimal: newStatusAnimal})
+      try {
+        await animaisCollection.where('idAnimal', '==', '' + fetchIdAnimal + '').get().then(function(querySnapshot) {
+          querySnapshot.forEach(function(doc) {
+              newDataAnimal ? doc.ref.update({dataNascimento: newDataAnimal}) : "";
+              newPesoAnimal ? doc.ref.update({pesoAnimal: newPesoAnimal}) : "";
+              newRacaAnimal ? doc.ref.update({racaAnimal: newRacaAnimal}) : "";
+              newSexoAnimal ? doc.ref.update({sexoAnimal: newSexoAnimal}) : "";
+              newStatusAnimal ? doc.ref.update({statusAnimal: newStatusAnimal}) : "";
+          })
         })
-      })
+        alert("Dados Editados com sucesso")
+      } catch (error) {
+        alert(error)
+      }
   }
   const Delete = async () => {
     try {
@@ -80,7 +85,6 @@ const ConsultarAnimal = ({ navigation }) => {
       alert(error.message)
     }
   }
-  console.log("OnChange Peso:"+newPesoAnimal)
   return (
     <View >
       <Text>Consultar Animais</Text>
