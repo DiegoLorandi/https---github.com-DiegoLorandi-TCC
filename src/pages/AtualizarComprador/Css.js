@@ -2,10 +2,9 @@ import { StyleSheet } from 'react-native';
 const css = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 35,
-    paddingTop: 20,
+    margin: 20,
+    paddingTop: 10,
     alignItems: 'center',
-    backgroundColor: '#4682B4',
   },
   input: {
     height: 40,
@@ -16,9 +15,10 @@ const css = StyleSheet.create({
     padding: 5,
   },
   label: {
+    marginTop: 15,
+    marginBottom: 5,
     fontWeight: 'bold',
     textTransform: 'uppercase',
-    marginBottom: 2,
   },
   button: {
     backgroundColor: '#007bff',
@@ -26,9 +26,6 @@ const css = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     borderRadius: 5,
-    marginBottom: 10,
-  },
-  maskInput: {
     marginBottom: 10,
   },
 });

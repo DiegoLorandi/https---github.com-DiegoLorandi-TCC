@@ -70,7 +70,16 @@ const CadastrarAnimal = ({ navigation }) => {
         {/* <Text>Cadastro de Animais</Text> */}
       </Animatable.View>
 
-      <Animatable.View animation="fadeInUp" style={{ marginTop: 10 }}>
+      <Animatable.View
+        animation="fadeInUp"
+        style={{
+          marginTop: 10,
+          backgroundColor: '#ffffff',
+          padding: 10,
+          marginBottom: 20,
+          borderRadius: 5,
+        }}
+      >
         <Text style={css.label}>Id</Text>
         <TextInput
           style={css.input}
@@ -125,6 +134,7 @@ const CadastrarAnimal = ({ navigation }) => {
                 color: '#ffffff',
                 textAlign: 'center',
                 padding: 5,
+                textTransform: 'uppercase',
               }}
             >
               Cadastrar Animal

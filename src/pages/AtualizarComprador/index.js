@@ -12,7 +12,7 @@ import Radio from '../../components/Ratio';
 import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
 
-const AtualizarAnimal = (props) => {
+const AtualizarComprador = (props) => {
   const navigation = props.navigation;
   var animal = props.route.params;
   const [selected, setSelected] = useState(0);
@@ -175,4 +175,4 @@ const AtualizarAnimal = (props) => {
     </ScrollView>
   );
 };
-export default AtualizarAnimal;
+export default AtualizarComprador;
