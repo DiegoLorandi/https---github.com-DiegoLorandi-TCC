@@ -98,6 +98,7 @@ const ConsultarAnimal = ({ navigation }) => {
       setShowSexoAnimal("")
       setShowRacaAnimal("")
       setShowStatusAnimal("")
+      alert("Animal Excluido")
       setEditable(false)
     } catch (error) {
       alert(error.message)
