@@ -49,13 +49,13 @@ const Login = ({ navigation }) => {
   const handleLogin = () => {
     //fazer login
     navigation.navigate('Home');
-    // auth
-    // .signInWithEmailAndPassword( email, password)
-    // .then(userCredential => {
-    //   const user = userCredential.user;
-    //   console.log(user.email)
-    // })
-    // .catch((error) => alert(error.message));
+    auth
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user.email);
+      })
+      .catch((error) => alert(error.message));
   };
 
   return (

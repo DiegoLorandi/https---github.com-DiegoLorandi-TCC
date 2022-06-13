@@ -10,6 +10,8 @@ import React, { useState } from 'react';
 import MaskInput from 'react-native-mask-input';
 import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
+import getRealm from '../../services/realm';
 
 const CadastrarComprador = ({ navigation }) => {
   const [newCpfComprador, setNewCpfComprador] = useState('');
@@ -26,48 +28,59 @@ const CadastrarComprador = ({ navigation }) => {
   const [newEmailComprador, setNewEmailComprador] = useState('');
 
   const Create = async () => {
-    const compradoresCollection = db.collection('compradores');
-    if (
-      newCpfComprador == '' ||
-      newTelefoneComprador == '' ||
-      newNomeComprador == '' ||
-      newCepComprador == '' ||
-      newNumeroComprador == '' ||
-      newRuaComprador == '' ||
-      newBairroComprador == '' ||
-      newMunicipioComprador == '' ||
-      newEstadoComprador == '' ||
-      newEmailComprador == ''
-    ) {
-      alert('Preencha todos os dados corretamente');
-    } else {
-      try {
-        await compradoresCollection.doc(newCpfComprador).set({
-          nome: newNomeComprador,
-          telefone: newTelefoneComprador,
-          cep: newCepComprador,
-          numero: newNumeroComprador,
-          rua: newRuaComprador,
-          bairro: newBairroComprador,
-          municipio: newMunicipioComprador,
-          estado: newEstadoComprador,
-          email: newEmailComprador,
-        });
-        setNewCpfComprador('');
-        setNewNomeComprador('');
-        setNewTelefoneComprador('');
-        setNewCepComprador('');
-        setNewNumeroComprador('');
-        setNewRuaComprador('');
-        setNewBairroComprador('');
-        setNewMunicipioComprador('');
-        setNewEstadoComprador('');
-        setNewEmailComprador('');
-        alert('Comprador cadastrado com sucesso');
-        navigation.goBack();
-      } catch (error) {
-        alert(error.message);
+    const data = {
+      nome: newNomeComprador,
+      telefone: newTelefoneComprador,
+      cep: newCepComprador,
+      numero: newNumeroComprador,
+      rua: newRuaComprador,
+      bairro: newBairroComprador,
+      municipio: newMunicipioComprador,
+      estado: newEstadoComprador,
+      email: newEmailComprador,
+    };
+
+    if (NetInfoHelper.isConnected() && false) {
+      if (
+        newCpfComprador == '' ||
+        newTelefoneComprador == '' ||
+        newNomeComprador == '' ||
+        newCepComprador == '' ||
+        newNumeroComprador == '' ||
+        newRuaComprador == '' ||
+        newBairroComprador == '' ||
+        newMunicipioComprador == '' ||
+        newEstadoComprador == '' ||
+        newEmailComprador == ''
+      ) {
+        alert('Preencha todos os dados corretamente');
+      } else {
+        const compradoresCollection = db.collection('compradores');
+        try {
+          await compradoresCollection.doc(newCpfComprador).set(data);
+          setNewCpfComprador('');
+          setNewNomeComprador('');
+          setNewTelefoneComprador('');
+          setNewCepComprador('');
+          setNewNumeroComprador('');
+          setNewRuaComprador('');
+          setNewBairroComprador('');
+          setNewMunicipioComprador('');
+          setNewEstadoComprador('');
+          setNewEmailComprador('');
+          alert('Comprador cadastrado com sucesso');
+          navigation.goBack();
+        } catch (error) {
+          alert(error.message);
+        }
       }
+    } else {
+      const realm = await getRealm();
+      realm.write(() => {
+        realm.create('Compradores', { ...data, cpf: newCpfComprador });
+      });
+      console.log('cadastro no realm!');
+      realm.close();
     }
   };
 

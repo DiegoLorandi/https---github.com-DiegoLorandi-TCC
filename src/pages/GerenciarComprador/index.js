@@ -17,28 +17,6 @@ const GerenciarCompradores = ({ navigation, route }) => {
   const [compradores, setCompradores] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [editable, setEditable] = useState(false);
-  const [fetchCpfComprador, setFetchCpfComprador] = useState('');
-  const [showTelefoneComprador, setShowTelefoneComprador] = useState('');
-  const [showNomeComprador, setShowNomeComprador] = useState('');
-  const [showCepComprador, setShowCepComprador] = useState('');
-  const [showNumeroComprador, setShowNumeroComprador] = useState('');
-  const [showRuaComprador, setShowRuaComprador] = useState('');
-  const [showBairroComprador, setShowBairroComprador] = useState('');
-  const [showMunicipioComprador, setShowMunicipioComprador] = useState('');
-  const [showEstadoComprador, setShowEstadoComprador] = useState('');
-  const [showEmailComprador, setShowEmailComprador] = useState('');
-
-  const [newTelefoneComprador, setNewTelefoneComprador] = useState();
-  const [newNomeComprador, setNewNomeComprador] = useState(null);
-  const [newCepComprador, setNewCepComprador] = useState(null);
-  const [newNumeroComprador, setNewNumeroComprador] = useState(null);
-  const [newRuaComprador, setNewRuaComprador] = useState(null);
-  const [newBairroComprador, setNewBairroComprador] = useState(null);
-  const [newMunicipioComprador, setNewMunicipioComprador] = useState(null);
-  const [newEstadoComprador, setNewEstadoComprador] = useState(null);
-  const [newEmailComprador, setNewEmailComprador] = useState(null);
-
   const tableConfigs = {
     title: ['Nome', 'Telefone', ''],
     widths: [100, 130],
@@ -56,7 +34,7 @@ const GerenciarCompradores = ({ navigation, route }) => {
     getCompradores.forEach(async (doc) => {
       if (doc.id) {
         allCompradores.push({
-          id: doc.id,
+          cpf: doc.id,
           telefone: doc.data().telefone,
           nome: doc.data().nome,
           cep: doc.data().cep,
@@ -82,10 +60,10 @@ const GerenciarCompradores = ({ navigation, route }) => {
     );
     await getComprador.get().then(function (querySnapshot) {
       querySnapshot.forEach(function (doc) {
-        setAnimais(currentAnimais);
+        setCompradores(currentCompradores);
         setIdRemoved(doc.id);
-        let currentAnimais = compradores.filter(
-          (currentAnimal) => currentAnimal.idAnimal != animal.idAnimal,
+        let currentCompradores = compradores.filter(
+          (currentComprador) => currentComprador.email != comprador.email,
         );
         doc.ref.delete();
       });
@@ -93,7 +71,7 @@ const GerenciarCompradores = ({ navigation, route }) => {
   }
 
   async function confirmRemove(animal) {
-    Alert.alert('Excluir dado', 'Deseja excluir esse animal?', [
+    Alert.alert('Excluir dado', 'Deseja excluir esse comprador?', [
       {
         text: 'Sim',
         onPress() {
@@ -138,7 +116,7 @@ const GerenciarCompradores = ({ navigation, route }) => {
         renderItem={({ item }) => (
           <TodoList
             item={item}
-            editCb={() => navigation.navigate('AtualizarAnimal', item)}
+            editCb={() => navigation.navigate('AtualizarComprador', item)}
             removeCb={() => {
               confirmRemove(item);
             }}

@@ -1,7 +1,9 @@
 const AnimaisSchema = {
   name: 'Animais',
   properties: {
-    idAnimal: 'int',
+    idAnimal: 'string',
+    pesoId: 'int',
+    peso: 'string',
     dataNascimento: 'string',
     racaAnimal: 'string',
     sexoAnimal: 'string',

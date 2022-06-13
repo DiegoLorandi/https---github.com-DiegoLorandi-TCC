@@ -11,6 +11,8 @@ import MaskInput from 'react-native-mask-input';
 import Radio from '../../components/Ratio';
 import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
+import getRealm from '../../services/realm';
 
 const CadastrarAnimal = ({ navigation }) => {
   const [selected, setSelected] = useState(0);
@@ -22,47 +24,64 @@ const CadastrarAnimal = ({ navigation }) => {
   const [newStatusAnimal, setNewStatusAnimal] = useState('');
 
   const Create = async () => {
-    const animaisCollection = db.collection('animais');
-    if (
-      newIdAnimal == '' ||
-      newPesoAnimal == '' ||
-      newDataAnimal == '' ||
-      newRacaAnimal == '' ||
-      newSexoAnimal == '' ||
-      newStatusAnimal == ''
-    ) {
-      alert('Preencha todos os dados corretamente');
-    } else {
-      try {
-        var docId = '';
-        await animaisCollection
-          .add({
-            pesoId: 1,
-            idAnimal: newIdAnimal,
-            dataNascimento: newDataAnimal,
-            sexoAnimal: newSexoAnimal,
-            racaAnimal: newRacaAnimal,
-            statusAnimal: newStatusAnimal,
-          })
-          .then((data) => {
+    const data = {
+      pesoId: 1,
+      idAnimal: newIdAnimal,
+      dataNascimento: newDataAnimal,
+      sexoAnimal: newSexoAnimal,
+      racaAnimal: newRacaAnimal,
+      statusAnimal: newStatusAnimal,
+    };
+
+    if (NetInfoHelper.isConnected()) {
+      // Salva no firebase
+      if (
+        newIdAnimal == '' ||
+        newPesoAnimal == '' ||
+        newDataAnimal == '' ||
+        newRacaAnimal == '' ||
+        newSexoAnimal == '' ||
+        newStatusAnimal == ''
+      ) {
+        alert('Preencha todos os dados corretamente');
+      } else {
+        const animaisCollection = db.collection('animais');
+        try {
+          var docId = '';
+          await animaisCollection.add(data).then((data) => {
             docId = data.id;
           });
-        db.collection('animais')
-          .doc(docId)
-          .collection('pesoAnimal')
-          .doc('1')
-          .set({
-            idAnimal: newIdAnimal,
-            pesoAnimal: newPesoAnimal,
-            data: new Date(),
-          });
-        alert('Animal cadastrado');
-        navigation.navigate('Gerenciar Animais', newIdAnimal);
-      } catch (error) {
-        alert(error.message);
+          db.collection('animais')
+            .doc(docId)
+            .collection('pesoAnimal')
+            .doc('1')
+            .set({
+              idAnimal: newIdAnimal,
+              pesoAnimal: newPesoAnimal,
+              data: new Date(),
+            });
+          alert('Animal cadastrado');
+          navigation.navigate('Gerenciar Animais', newIdAnimal);
+        } catch (error) {
+          alert(error.message);
+        }
       }
+    } else {
+      // Salva no realm
+      const realm = await getRealm();
+      try {
+        realm.write(() => {
+          realm.create('Animais', { ...data, peso: newPesoAnimal });
+        });
+      } catch (e) {
+        console.log(e);
+      }
+      alert('Animal cadastrado');
+      navigation.navigate('Gerenciar Animais', newIdAnimal);
     }
   };
+
+  async function createFirebase() {}
 
   return (
     <ScrollView style={{ paddingLeft: 20, paddingRight: 20 }}>

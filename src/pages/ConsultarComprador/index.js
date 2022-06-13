@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import React, { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
@@ -119,6 +120,7 @@ const ConsultarComprador = ({ navigation }) => {
               .set({ email: newEmailComprador }, { merge: true })
           : '';
         alert('Dados Editados com sucesso');
+        navigation.goBack();
       }
     } catch (error) {
       alert(error);
@@ -127,6 +129,7 @@ const ConsultarComprador = ({ navigation }) => {
 
   const Delete = async () => {
     try {
+      console.log(`cpf: ${fetchCpfComprador}`);
       const compradoresCollection = db.collection('compradores');
       await compradoresCollection.doc(fetchCpfComprador).delete();
 
@@ -142,6 +145,7 @@ const ConsultarComprador = ({ navigation }) => {
       setShowEmailComprador('');
       setEditable(false);
       alert('Comprador Excluido');
+      navigation.goBack();
     } catch (error) {
       alert(error.message);
     }
@@ -331,6 +335,7 @@ const ConsultarComprador = ({ navigation }) => {
             style={{
               fontWeight: 'bold',
               color: '#ffffff',
+              textAlign: 'center',
               textTransform: 'uppercase',
             }}
           >
@@ -342,7 +347,8 @@ const ConsultarComprador = ({ navigation }) => {
   );
 
   async function confirmRemove() {
-    Alert.alert('Excluir dado', 'Deseja excluir esse animal?', [
+    console.log('confirmRemove()');
+    Alert.alert('Excluir dado', 'Deseja excluir esse comprador?', [
       {
         text: 'Sim',
         onPress() {

@@ -15,6 +15,7 @@ import ConsultarComprador from '../pages/ConsultarComprador';
 import GerarRelatorios from '../pages/GerarRelatorios';
 import AtualizarAnimal from '../pages/AtualizarAnimal';
 import AtualizarPeso from '../pages/AtualizarPeso';
+import AtualizarComprador from '../pages/AtualizarComprador';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
 
@@ -102,6 +103,12 @@ const MyStack = () => (
         name="AtualizarAnimal"
         options={{ title: 'Atualizar Animal' }}
         component={AtualizarAnimal}
+      />
+
+      <Stack.Screen
+        name="AtualizarComprador"
+        options={{ title: 'Atualizar Comprador' }}
+        component={AtualizarComprador}
       />
     </Stack.Navigator>
   </NavigationContainer>

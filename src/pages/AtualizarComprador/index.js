@@ -1,178 +1,348 @@
-import { db } from '../../../firebase';
 import {
   View,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import MaskInput from 'react-native-mask-input';
-import Radio from '../../components/Ratio';
-import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
+import { css } from './Css';
+import { db } from '../../../firebase';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
-const AtualizarComprador = (props) => {
-  const navigation = props.navigation;
-  var animal = props.route.params;
-  const [selected, setSelected] = useState(0);
-  const [newIdAnimal, setNewIdAnimal] = useState('');
-  const [newPesoAnimal, setNewPesoAnimal] = useState();
-  const [newDataAnimal, setNewDataAnimal] = useState('');
-  const [newRacaAnimal, setNewRacaAnimal] = useState('');
-  const [newSexoAnimal, setNewSexoAnimal] = useState('Macho');
-  const [newStatusAnimal, setNewStatusAnimal] = useState('');
-  const [currentPesoId, setcurrentPesoId] = useState(0);
+const AtualizarComprador = ({ navigation, route }) => {
+  var compradorDados = route.params;
+  console.log(compradorDados);
+  const [editable, setEditable] = useState(false);
+  const [fetchCpfComprador, setFetchCpfComprador] = useState('');
+  const [showTelefoneComprador, setShowTelefoneComprador] = useState('');
+  const [showNomeComprador, setShowNomeComprador] = useState('');
+  const [showCepComprador, setShowCepComprador] = useState('');
+  const [showNumeroComprador, setShowNumeroComprador] = useState('');
+  const [showRuaComprador, setShowRuaComprador] = useState('');
+  const [showBairroComprador, setShowBairroComprador] = useState('');
+  const [showMunicipioComprador, setShowMunicipioComprador] = useState('');
+  const [showEstadoComprador, setShowEstadoComprador] = useState('');
+  const [showEmailComprador, setShowEmailComprador] = useState('');
+
+  const [newTelefoneComprador, setNewTelefoneComprador] = useState();
+  const [newNomeComprador, setNewNomeComprador] = useState(null);
+  const [newCepComprador, setNewCepComprador] = useState(null);
+  const [newNumeroComprador, setNewNumeroComprador] = useState(null);
+  const [newRuaComprador, setNewRuaComprador] = useState(null);
+  const [newBairroComprador, setNewBairroComprador] = useState(null);
+  const [newMunicipioComprador, setNewMunicipioComprador] = useState(null);
+  const [newEstadoComprador, setNewEstadoComprador] = useState(null);
+  const [newEmailComprador, setNewEmailComprador] = useState(null);
+
+  const [notFinded, setNotFinded] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setNewIdAnimal(animal.idAnimal);
-    setNewPesoAnimal(animal.pesoId);
-    setNewSexoAnimal(animal.sexoAnimalBuscado);
-    setNewStatusAnimal(animal.statusAnimalBuscado);
-    setNewDataAnimal(animal.dataAnimalBuscado);
-    setNewRacaAnimal(animal.racaAnimalBuscado);
-    setcurrentPesoId(animal.pesoId);
-    (async function () {
-      const animaisCollection = db.collection('animais');
-      var getPesoAnimal = await animaisCollection
-        .doc(animal.id)
-        .collection('pesoAnimal')
-        .doc('' + animal.pesoId + '')
+    setFetchCpfComprador(compradorDados.cpf);
+    setShowTelefoneComprador(compradorDados.telefone);
+    setShowNomeComprador(compradorDados.nome);
+    setShowCepComprador(compradorDados.cep);
+    setShowNumeroComprador(compradorDados.numero);
+    setShowRuaComprador(compradorDados.rua);
+    setShowBairroComprador(compradorDados.bairro);
+    setShowMunicipioComprador(compradorDados.municipio);
+    setShowEstadoComprador(compradorDados.estado);
+    setShowEmailComprador(compradorDados.email);
+    setEditable(true);
+  }, [route]);
+
+  const Read = async () => {
+    setLoading(true);
+    try {
+      const compradoresCollection = db.collection('compradores');
+      var getCompradores = await compradoresCollection
+        .doc(fetchCpfComprador)
         .get();
-      setNewPesoAnimal(getPesoAnimal.data().pesoAnimal);
-      animal.pesoAnimal = getPesoAnimal.data().pesoAnimal;
-    })();
-  }, [props.route]);
+
+      setShowTelefoneComprador(getCompradores.data().telefone);
+      setShowNomeComprador(getCompradores.data().nome);
+      setShowCepComprador(getCompradores.data().cep);
+      setShowNumeroComprador(getCompradores.data().numero);
+      setShowRuaComprador(getCompradores.data().rua);
+      setShowBairroComprador(getCompradores.data().bairro);
+      setShowMunicipioComprador(getCompradores.data().municipio);
+      setShowEstadoComprador(getCompradores.data().estado);
+      setShowEmailComprador(getCompradores.data().email);
+      setEditable(true);
+      setSearched(true);
+      setNotFinded(false);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setNotFinded(true);
+    }
+  };
 
   const Update = async () => {
-    const animaisCollection = db.collection('animais');
+    const compradoresCollection = db.collection('compradores');
     try {
-      var docId = '';
-      var pesoId;
-      await animaisCollection
-        .where('idAnimal', '==', '' + animal.idAnimal + '')
-        .get()
-        .then(function (querySnapshot) {
-          querySnapshot.forEach(function (doc) {
-            docId = doc.id;
-            pesoId = doc.data().pesoId; //recebe o pesoId que está no documento
-            newDataAnimal
-              ? doc.ref.update({ dataNascimento: newDataAnimal })
-              : '';
-            newRacaAnimal ? doc.ref.update({ racaAnimal: newRacaAnimal }) : '';
-            newSexoAnimal ? doc.ref.update({ sexoAnimal: newSexoAnimal }) : '';
-            newStatusAnimal
-              ? doc.ref.update({ statusAnimal: newStatusAnimal })
-              : '';
-          });
-        });
-      if (newPesoAnimal != animal.pesoAnimal && newPesoAnimal != null) {
-        var newPesoId = pesoId + 1; //soma 1 na variável pesoId
-        setcurrentPesoId(newPesoId);
-        await animaisCollection
-          .doc(docId)
-          .set({ pesoId: newPesoId }, { merge: true }); //atualiza o pesoId do documento do animal
-        await db
-          .collection('animais')
-          .doc(docId)
-          .collection('pesoAnimal')
-          .doc('' + newPesoId + '')
-          .set({
-            idAnimal: newIdAnimal,
-            pesoAnimal: newPesoAnimal,
-            data: new Date(),
-          });
+      const teste = compradoresCollection.doc('' + fetchCpfComprador + '');
+      const doc = await teste.get(); //verifica se o CPF informado corresponde a um documento existente
+      if (!doc.exists) {
+        alert('CPF não existe na base de dados');
+      } else {
+        newNomeComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ nome: newNomeComprador }, { merge: true })
+          : '';
+        newTelefoneComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ telefone: newTelefoneComprador }, { merge: true })
+          : '';
+        newCepComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ cep: newCepComprador }, { merge: true })
+          : '';
+        newNumeroComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ numero: newNumeroComprador }, { merge: true })
+          : '';
+        newRuaComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ rua: newRuaComprador }, { merge: true })
+          : '';
+        newBairroComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ bairro: newBairroComprador }, { merge: true })
+          : '';
+        newMunicipioComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ municipio: newMunicipioComprador }, { merge: true })
+          : '';
+        newEstadoComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ estado: newEstadoComprador }, { merge: true })
+          : '';
+        newEmailComprador
+          ? await compradoresCollection
+              .doc('' + fetchCpfComprador + '')
+              .set({ email: newEmailComprador }, { merge: true })
+          : '';
+        alert('Dados Editados com sucesso');
+        navigation.navigate('Gerenciar Comprador', compradorDados);
       }
-      alert('Dados Atualizados com sucesso!');
-      navigation.navigate('Gerenciar Animais', animal);
     } catch (error) {
       alert(error);
     }
   };
 
+  const Delete = async () => {
+    try {
+      const compradoresCollection = db.collection('compradores');
+      await compradoresCollection.doc(fetchCpfComprador).delete();
+
+      setFetchCpfComprador('');
+      setShowTelefoneComprador('');
+      setShowNomeComprador('');
+      setShowCepComprador('');
+      setShowNumeroComprador('');
+      setShowRuaComprador('');
+      setShowBairroComprador('');
+      setShowMunicipioComprador('');
+      setShowEstadoComprador('');
+      setShowEmailComprador('');
+      setEditable(false);
+      alert('Comprador Excluido');
+      navigation.goBack();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const elementForm = () => (
+    <View
+      style={{
+        backgroundColor: '#ffffff',
+        padding: 10,
+        borderRadius: 4,
+        marginLeft: 5,
+        marginRight: 5,
+        marginTop: 20,
+        marginBottom: 20,
+        shadowOffset: {
+          width: 5,
+          height: -5,
+        },
+        shadowOpacity: 1,
+        shadowRadius: 2,
+      }}
+    >
+      <Text style={css.label}>Nome do Comprador:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showNomeComprador}
+        value={newNomeComprador}
+        onChangeText={(text) => setNewNomeComprador(text)}
+      />
+      <Text style={css.label}>Telefone:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showTelefoneComprador}
+        value={newTelefoneComprador}
+        onChangeText={(text) => setNewTelefoneComprador(text)}
+      />
+
+      <Text style={css.label}>CEP:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showCepComprador}
+        value={newCepComprador}
+        onChangeText={(text) => setNewCepComprador(text)}
+      />
+
+      <Text style={css.label}>Número da Residência:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showNumeroComprador}
+        value={newNumeroComprador}
+        onChangeText={(text) => setNewNumeroComprador(text)}
+      />
+
+      <Text style={css.label}>Rua:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showRuaComprador}
+        value={newRuaComprador}
+        onChangeText={(text) => setNewRuaComprador(text)}
+      />
+
+      <Text style={css.label}>Bairro:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showBairroComprador}
+        value={newBairroComprador}
+        onChangeText={(text) => setNewBairroComprador(text)}
+      />
+
+      <Text style={css.label}>Município:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showMunicipioComprador}
+        value={newMunicipioComprador}
+        onChangeText={(text) => setNewMunicipioComprador(text)}
+      />
+
+      <Text style={css.label}>Estado:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showEstadoComprador}
+        value={newEstadoComprador}
+        onChangeText={(text) => setNewEstadoComprador(text)}
+      />
+
+      <Text style={css.label}>E-Mail:</Text>
+      <TextInput
+        style={css.input}
+        editable={editable}
+        multiline={false}
+        defaultValue={showEmailComprador}
+        value={newEmailComprador}
+        onChangeText={(text) => setNewEmailComprador(text)}
+      />
+
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+        <TouchableOpacity
+          onPress={Update}
+          style={{
+            ...css.button,
+            flex: 0.5,
+            backgroundColor: '#007bff',
+            borderTopLeftRadius: 4,
+            borderBottomLeftRadius: 4,
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: 'bold',
+              color: '#ffffff',
+              textTransform: 'uppercase',
+            }}
+          >
+            Editar dados
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={confirmRemove}
+          style={{
+            ...css.button,
+            flex: 0.5,
+            backgroundColor: '#dc3545',
+            borderBottomRightRadius: 4,
+            borderTopRightRadius: 4,
+          }}
+        >
+          <Text
+            style={{
+              fontWeight: 'bold',
+              color: '#ffffff',
+              textAlign: 'center',
+              textTransform: 'uppercase',
+            }}
+          >
+            Excluir Comprador
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  async function confirmRemove() {
+    console.log('confirmRemove()');
+    Alert.alert('Excluir dado', 'Deseja excluir esse comprador?', [
+      {
+        text: 'Sim',
+        onPress() {
+          Delete();
+        },
+      },
+      {
+        text: 'Não',
+      },
+    ]);
+  }
+
   return (
-    <ScrollView style={{ paddingLeft: 20, paddingRight: 20 }}>
-      <Animatable.View animation="fadeInUp" delay={500}>
-        {/* <Text>Cadastro de Animais</Text> */}
-      </Animatable.View>
-
-      <Animatable.View
-        animation="fadeInUp"
-        style={{
-          marginTop: 10,
-          marginBottom: 10,
-          backgroundColor: '#ffffff',
-          borderRadius: 5,
-          padding: 10,
-        }}
-      >
-        <Text style={css.label}>Id</Text>
-        <TextInput
-          style={css.input}
-          value={newIdAnimal}
-          placeholder="Digite o Id do animal"
-          onChangeText={(value) => setNewIdAnimal(value)}
-        />
-        <Text style={css.label}>Data de Nascimento</Text>
-        <MaskInput
-          value={newDataAnimal}
-          onChangeText={(masked, unmasked) => {
-            setNewDataAnimal(masked);
-          }}
-          mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-        />
-
-        <Text style={css.label}>Peso</Text>
-        <TextInput
-          style={css.input}
-          keyboardType="numeric"
-          placeholder="Kg:000.00"
-          value={newPesoAnimal}
-          onChangeText={(value) => setNewPesoAnimal(value)}
-        />
-        <Text style={css.label}>Raça</Text>
-        <TextInput
-          style={css.input}
-          value={newRacaAnimal}
-          placeholder="Digite a raça do animal"
-          onChangeText={(value) => setNewRacaAnimal(value)}
-        />
-        <Text style={css.label}>Sexo</Text>
-        <Radio
-          selected={selected}
-          options={['Macho', 'Fêmea']}
-          horizontal={true}
-          onChangeSelect={(options, index) => {
-            setNewSexoAnimal(options);
-            setSelected(index);
-          }}
-        />
-
-        <Text style={css.label}>Status</Text>
-        <TextInput
-          style={css.input}
-          value={newStatusAnimal}
-          placeholder="Selecione o status do animal"
-          onChangeText={(value) => setNewStatusAnimal(value)}
-        />
-
-        <View>
-          <TouchableOpacity onPress={Update} style={css.button}>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                color: '#ffffff',
-                textAlign: 'center',
-                padding: 5,
-                textTransform: 'uppercase',
-              }}
-            >
-              Atualizar Animal
-            </Text>
-          </TouchableOpacity>
-        </View>
+    <ScrollView style={searched === false ? { flex: 1 } : {}}>
+      <Animatable.View animation="fadeInUp" style={css.formLogin}>
+        {elementForm()}
       </Animatable.View>
     </ScrollView>
   );
 };
+
 export default AtualizarComprador;
