@@ -2,14 +2,23 @@ import { View, Button, TouchableOpacity, Text } from 'react-native';
 import * as React from 'react';
 import { auth } from '../../../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
+import getRealm from '../../services/realm';
 const Home = ({ navigation }) => {
-  const handleSignOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        navigation.replace('Login');
-      })
-      .catch((error) => alert(error.message));
+  const handleSignOut = async () => {
+    if (NetInfoHelper.isConnected()) {
+      auth
+        .signOut()
+        .then(() => {
+          navigation.replace('Login');
+        })
+        .catch((error) => alert(error.message));
+    }
+    const realm = await getRealm();
+    realm.write(() => {
+      realm.delete(realm.objects('Usuario'));
+    });
+    realm.close();
   };
   return (
     <View

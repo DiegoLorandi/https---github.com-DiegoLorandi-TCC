@@ -12,6 +12,7 @@ import * as Animatable from 'react-native-animatable';
 import { css } from './Css';
 import { db } from '../../../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
 
 const ConsultarComprador = ({ navigation }) => {
   const [editable, setEditable] = useState(false);
@@ -41,6 +42,12 @@ const ConsultarComprador = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
 
   const Read = async () => {
+    if (NetInfoHelper.isConnected() === false) {
+      alert(
+        'É necessário estar conectado a internet para consultar um comprador',
+      );
+      return;
+    }
     setLoading(true);
     try {
       const compradoresCollection = db.collection('compradores');
@@ -129,7 +136,6 @@ const ConsultarComprador = ({ navigation }) => {
 
   const Delete = async () => {
     try {
-      console.log(`cpf: ${fetchCpfComprador}`);
       const compradoresCollection = db.collection('compradores');
       await compradoresCollection.doc(fetchCpfComprador).delete();
 
@@ -347,7 +353,6 @@ const ConsultarComprador = ({ navigation }) => {
   );
 
   async function confirmRemove() {
-    console.log('confirmRemove()');
     Alert.alert('Excluir dado', 'Deseja excluir esse comprador?', [
       {
         text: 'Sim',

@@ -11,6 +11,8 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../../../firebase';
 import TodoList from '../../components/TodoList';
 import { css } from './Css';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
+import getRealm from '../../services/realm';
 
 const GerenciarAnimais = ({ navigation, route }) => {
   const [idRemoved, setIdRemoved] = useState('');
@@ -23,30 +25,50 @@ const GerenciarAnimais = ({ navigation, route }) => {
   };
 
   useEffect(() => {
-    console.log('useEffects()');
     getAnimais();
   }, [route, idRemoved]);
 
   async function getAnimais() {
-    setLoading(true);
-    const animaisCollection = db.collection('animais');
-    const animaisObject = await animaisCollection.get();
-    var allAnimais = [];
-    animaisObject.forEach(async (doc) => {
-      if (doc.data().idAnimal) {
+    console.log('getAnimais!');
+    // Online
+    if (NetInfoHelper.isConnected()) {
+      setLoading(true);
+      const animaisCollection = db.collection('animais');
+      const animaisObject = await animaisCollection.get();
+      var allAnimais = [];
+      animaisObject.forEach(async (doc) => {
+        if (doc.data().idAnimal) {
+          allAnimais.push({
+            id: doc.id,
+            idAnimal: doc.data().idAnimal,
+            pesoId: doc.data().pesoId,
+            dataAnimalBuscado: doc.data().dataNascimento,
+            sexoAnimalBuscado: doc.data().sexoAnimal,
+            racaAnimalBuscado: doc.data().racaAnimal,
+            statusAnimalBuscado: doc.data().statusAnimal,
+          });
+        }
+      });
+      setLoading(false);
+      setAnimais(allAnimais);
+    } else {
+      // Offline
+      const realm = await getRealm();
+      const animaisObject = realm
+        .objects('Animais')
+        .filtered(`tipoDado == 'consultados'`);
+      var allAnimais = [];
+      animaisObject.forEach((animal) => {
         allAnimais.push({
-          id: doc.id,
-          idAnimal: doc.data().idAnimal,
-          pesoId: doc.data().pesoId,
-          dataAnimalBuscado: doc.data().dataNascimento,
-          sexoAnimalBuscado: doc.data().sexoAnimal,
-          racaAnimalBuscado: doc.data().racaAnimal,
-          statusAnimalBuscado: doc.data().statusAnimal,
+          idAnimal: animal.idAnimal,
+          pesoId: animal.pesoId,
+          dataAnimalBuscado: animal.dataNascimento,
+          sexoAnimalBuscado: animal.sexoAnimal,
+          racaAnimalBuscado: animal.racaAnimal,
+          statusAnimalBuscado: animal.statusAnimal,
         });
-      }
-    });
-    setLoading(false);
-    setAnimais(allAnimais);
+      });
+    }
   }
 
   async function deleteData(animal) {
@@ -57,17 +79,17 @@ const GerenciarAnimais = ({ navigation, route }) => {
       '' + animal.idAnimal + '',
     );
     await getAnimais.get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        setAnimais(currentAnimais);
-        setIdRemoved(doc.id);
-        console.log('removeu com sucesso!');
-        console.log(animais);
+      querySnapshot.forEach(async function (doc) {
         let currentAnimais = animais.filter(
           (currentAnimal) => currentAnimal.idAnimal != animal.idAnimal,
         );
+        console.log(currentAnimais);
+        setAnimais(currentAnimais);
+        setIdRemoved(doc.id);
         doc.ref.delete();
       });
     });
+    alert('Animal removido com sucesso!');
   }
 
   async function confirmRemove(animal) {

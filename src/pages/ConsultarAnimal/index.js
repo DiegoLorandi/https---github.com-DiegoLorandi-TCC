@@ -14,6 +14,7 @@ import * as Animatable from 'react-native-animatable';
 import { css } from './Css';
 import { db } from '../../../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
 
 const ConsultarAnimal = ({ navigation }) => {
   const [editable, setEditable] = useState(false);
@@ -33,11 +34,13 @@ const ConsultarAnimal = ({ navigation }) => {
   const [newRacaAnimal, setNewRacaAnimal] = useState(null);
   const [newStatusAnimal, setNewStatusAnimal] = useState(null);
 
-  useEffect(() => {
-    console.log(`Searched: ${searched}`);
-  }, [searched]);
+  useEffect(() => {}, [searched]);
 
   const Read = async () => {
+    if (NetInfoHelper.isConnected() === false) {
+      alert('É necessário estar com internet para executar essa ação.');
+      return;
+    }
     setLoading(true);
     setNotFinded(false);
     const animaisCollection = db.collection('animais');
@@ -84,6 +87,7 @@ const ConsultarAnimal = ({ navigation }) => {
       setLoading(false);
     } catch (error) {
       alert(error.message);
+      setLoading(false);
     }
   };
   const Update = async () => {

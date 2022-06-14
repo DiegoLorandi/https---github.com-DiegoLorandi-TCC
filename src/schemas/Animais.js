@@ -8,6 +8,7 @@ const AnimaisSchema = {
     racaAnimal: 'string',
     sexoAnimal: 'string',
     statusAnimal: 'string',
+    tipoDado: 'string',
   },
 };
 

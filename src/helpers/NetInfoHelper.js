@@ -6,8 +6,7 @@ export function isConnected() {
 
 export default class NetInfoHelper {
   static async isConnected() {
-    // return NetInfo.fetch().then((state) => state.isConnected);
-    return false;
+    return NetInfo.fetch().then((state) => state.isConnected);
   }
 
   static addNetworkListener(callback) {

@@ -1,7 +1,7 @@
 const CompradoresSchema = {
   name: 'Compradores',
   properties: {
-    cpf: 'string',
+    id: 'string', // cpf
     bairro: 'string',
     cep: 'string',
     email: 'string',
@@ -11,6 +11,7 @@ const CompradoresSchema = {
     numero: 'string',
     rua: 'string',
     telefone: 'string',
+    tipoDado: 'string',
   },
 };
 

@@ -15,6 +15,8 @@ const css = StyleSheet.create({
     padding: 5,
   },
   label: {
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
     marginBottom: 2,
   },
   button: {

@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MaskInput from 'react-native-mask-input';
 import Radio from '../../components/Ratio';
 import { css } from './Css';
@@ -68,26 +68,23 @@ const CadastrarAnimal = ({ navigation }) => {
       }
     } else {
       // Salva no realm
-      const realm = await getRealm();
-      try {
-        realm.write(() => {
-          realm.create('Animais', { ...data, peso: newPesoAnimal });
-        });
-      } catch (e) {
-        console.log(e);
-      }
       alert('Animal cadastrado');
+      const realm = await getRealm();
+      realm.write(() => {
+        realm.create('Animais', {
+          ...data,
+          peso: newPesoAnimal,
+          tipoDado: 'cadastro',
+        });
+      });
+      realm.close();
       navigation.navigate('Gerenciar Animais', newIdAnimal);
     }
   };
 
-  async function createFirebase() {}
-
   return (
     <ScrollView style={{ paddingLeft: 20, paddingRight: 20 }}>
-      <Animatable.View animation="fadeInUp" delay={500}>
-        {/* <Text>Cadastro de Animais</Text> */}
-      </Animatable.View>
+      <Animatable.View animation="fadeInUp" delay={500}></Animatable.View>
 
       <Animatable.View
         animation="fadeInUp"

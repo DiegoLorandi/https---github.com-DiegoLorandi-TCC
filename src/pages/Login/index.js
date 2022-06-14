@@ -11,10 +11,12 @@ import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
 import { auth } from '../../../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import getRealm from '../../services/realm';
 
 const Login = ({ navigation }) => {
   var [isPress, setIsPress] = React.useState(false);
   var [isPassword, setIsPassword] = React.useState(true); //controla o input da senha sendo secreta
+  const [logged, setLogged] = React.useState(false);
 
   var touchProps = {
     underlayColor: '#E8F1F2',
@@ -27,13 +29,25 @@ const Login = ({ navigation }) => {
   var [email, setEmail] = React.useState('');
   var [password, setPassword] = React.useState(''); // variável para receber email e senha
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const uid = user.uid;
+  React.useEffect(() => {
+    if (logged === true) {
       navigation.navigate('Home');
-    } else {
+      return;
     }
-  });
+    registerStateChange();
+    verifyLogin();
+  }, [logged]);
+
+  function registerStateChange() {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        // console.log(uid);
+        setLogged(true);
+      } else {
+      }
+    });
+  }
 
   const handleSignUp = () => {
     //cadastrar usuário
@@ -41,22 +55,47 @@ const Login = ({ navigation }) => {
       .createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        registerLoginRealm(user.uid);
         Alert.alert('Usuário Cadastrado');
       })
       .catch((error) => alert(error.message));
   };
 
   const handleLogin = () => {
-    //fazer login
-    navigation.navigate('Home');
+    // Login
     auth
       .signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log(user.email);
+        registerLoginRealm(user.uid);
       })
       .catch((error) => alert(error.message));
   };
+
+  async function registerLoginRealm(uid) {
+    const realm = await getRealm();
+    const usuario = realm.objects('Usuario');
+    // Salva no realmdb
+    if (usuario.length === 0) {
+      const data = {
+        userId: `${uid}`,
+      };
+      // realm.write(() => {
+      //   realm.create('Usuario', data);
+      // });
+      // realm.close();
+    }
+  }
+
+  // Verifica se já logou
+  async function verifyLogin() {
+    const realm = await getRealm();
+    const usuario = realm.objects('Usuario');
+    console.log(usuario);
+    if (usuario.length != 0) {
+      setLogged(true);
+    }
+  }
 
   return (
     <View style={css.blocoLogin}>

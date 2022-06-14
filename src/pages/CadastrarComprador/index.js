@@ -40,7 +40,7 @@ const CadastrarComprador = ({ navigation }) => {
       email: newEmailComprador,
     };
 
-    if (NetInfoHelper.isConnected() && false) {
+    if (NetInfoHelper.isConnected()) {
       if (
         newCpfComprador == '' ||
         newTelefoneComprador == '' ||
@@ -77,9 +77,12 @@ const CadastrarComprador = ({ navigation }) => {
     } else {
       const realm = await getRealm();
       realm.write(() => {
-        realm.create('Compradores', { ...data, cpf: newCpfComprador });
+        realm.create('Compradores', {
+          ...data,
+          cpf: newCpfComprador,
+          tipoDado: 'cadastro',
+        });
       });
-      console.log('cadastro no realm!');
       realm.close();
     }
   };
