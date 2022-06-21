@@ -1,4 +1,4 @@
-import { db } from '../../../firebase';
+import { db } from '../../services/firebase';
 import {
   View,
   Text,
@@ -12,7 +12,8 @@ import Radio from '../../components/Ratio';
 import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
 import NetInfoHelper from '../../helpers/NetInfoHelper';
-import getRealm from '../../services/realm';
+import AnimalFirebaseCrud from '../../utils/AnimalFirebaseCrud';
+import AnimalRealmCrud from '../../utils/AnimalRealmCrud';
 
 const CadastrarAnimal = ({ navigation }) => {
   const [selected, setSelected] = useState(0);
@@ -45,39 +46,27 @@ const CadastrarAnimal = ({ navigation }) => {
       ) {
         alert('Preencha todos os dados corretamente');
       } else {
-        const animaisCollection = db.collection('animais');
         try {
-          var docId = '';
-          await animaisCollection.add(data).then((data) => {
-            docId = data.id;
-          });
-          db.collection('animais')
-            .doc(docId)
-            .collection('pesoAnimal')
-            .doc('1')
-            .set({
-              idAnimal: newIdAnimal,
-              pesoAnimal: newPesoAnimal,
-              data: new Date(),
-            });
-          alert('Animal cadastrado');
-          navigation.navigate('Gerenciar Animais', newIdAnimal);
+          AnimalFirebaseCrud.Create(
+            data,
+            { newIdAnimal, newPesoAnimal },
+            (docId) => {
+              alert('Animal cadastrado');
+              navigation.navigate('Gerenciar Animais', { docId: docId });
+            },
+          );
         } catch (error) {
           alert(error.message);
         }
       }
     } else {
       // Salva no realm
-      alert('Animal cadastrado');
-      const realm = await getRealm();
-      realm.write(() => {
-        realm.create('Animais', {
-          ...data,
-          peso: newPesoAnimal,
-          tipoDado: 'cadastro',
-        });
-      });
-      realm.close();
+      try {
+        await AnimalRealmCrud.Create({ ...data, peso: newPesoAnimal });
+        alert('Animal cadastrado');
+      } catch (err) {
+        alert(err);
+      }
       navigation.navigate('Gerenciar Animais', newIdAnimal);
     }
   };

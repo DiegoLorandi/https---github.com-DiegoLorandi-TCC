@@ -1,6 +1,6 @@
 import { View, Text, TextInput, TouchableOpacity, Button } from 'react-native';
 import React, { useState } from 'react';
-import { db } from '../../../firebase';
+import { db } from '../../services/firebase';
 import getRealm from '../../services/realm';
 
 const AtualizarPeso = ({ navigation }) => {

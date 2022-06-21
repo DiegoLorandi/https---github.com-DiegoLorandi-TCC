@@ -3,18 +3,19 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  Button,
   ScrollView,
-  Dimensions,
   ActivityIndicator,
   Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { css } from './Css';
-import { db } from '../../../firebase';
+import { db } from '../../services/firebase';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import NetInfoHelper from '../../helpers/NetInfoHelper';
+import Radio from '../../components/Ratio';
+import AnimalFirebaseCrud from '../../utils/AnimalFirebaseCrud';
+import AnimalRealmCrud from '../../utils/AnimalRealmCrud';
 
 const ConsultarAnimal = ({ navigation }) => {
   const [editable, setEditable] = useState(false);
@@ -33,55 +34,33 @@ const ConsultarAnimal = ({ navigation }) => {
   const [newSexoAnimal, setNewSexoAnimal] = useState(null);
   const [newRacaAnimal, setNewRacaAnimal] = useState(null);
   const [newStatusAnimal, setNewStatusAnimal] = useState(null);
+  const [selected, setSelected] = useState(0);
 
   useEffect(() => {}, [searched]);
 
   const Read = async () => {
-    if (NetInfoHelper.isConnected() === false) {
-      alert('É necessário estar com internet para executar essa ação.');
-      return;
-    }
     setLoading(true);
     setNotFinded(false);
-    const animaisCollection = db.collection('animais');
+    if (NetInfoHelper.isConnected() === false) {
+      const animal = await AnimalRealmCrud.Read(fetchIdAnimal);
+      if (animal.length > 0) {
+        setDataAnimal(animal);
+        setEditable(true);
+        setLoading(false);
+      } else {
+        setNotFinded(true);
+        setLoading(false);
+      }
+      return;
+    }
     try {
-      var getAnimais = await animaisCollection
-        .where('idAnimal', '==', '' + fetchIdAnimal + '')
-        .get();
-      var dataAnimalBuscado;
-      var pesoAnimalBuscado;
-      var sexoAnimalBuscado;
-      var racaAnimalBuscado;
-      var statusAnimalBuscado;
-      var docId = '';
-      var pesoId;
-      getAnimais.forEach((doc) => {
-        docId = doc.id;
-        pesoId = doc.data().pesoId;
-        dataAnimalBuscado = doc.data().dataNascimento;
-        sexoAnimalBuscado = doc.data().sexoAnimal;
-        racaAnimalBuscado = doc.data().racaAnimal;
-        statusAnimalBuscado = doc.data().statusAnimal;
-      });
-
-      if (!docId) {
+      const animal = await AnimalFirebaseCrud.Read(fetchIdAnimal);
+      if (!animal.id) {
         setLoading(false);
         setNotFinded(true);
         return;
       }
-
-      var getPesoAnimal = await animaisCollection
-        .doc(docId)
-        .collection('pesoAnimal')
-        .doc('' + pesoId + '')
-        .get();
-      pesoAnimalBuscado = getPesoAnimal.data().pesoAnimal;
-
-      setShowDataAnimal(dataAnimalBuscado);
-      setShowPesoAnimal(pesoAnimalBuscado);
-      setShowSexoAnimal(sexoAnimalBuscado);
-      setShowRacaAnimal(racaAnimalBuscado);
-      setShowStatusAnimal(statusAnimalBuscado);
+      setDataAnimal({ ...animal });
       setEditable(true);
       setSearched(true);
       setLoading(false);
@@ -90,44 +69,23 @@ const ConsultarAnimal = ({ navigation }) => {
       setLoading(false);
     }
   };
+
+  function setDataAnimal(data) {
+    setShowDataAnimal(data.dataNascimento);
+    setShowPesoAnimal(data.pesoAnimal || data.peso);
+    setShowSexoAnimal(data.sexoAnimal);
+    setShowRacaAnimal(data.racaAnimal);
+    setShowStatusAnimal(data.statusAnimal);
+  }
+
   const Update = async () => {
-    const animaisCollection = db.collection('animais');
     try {
-      var docId = '';
-      var pesoId;
-      await animaisCollection
-        .where('idAnimal', '==', '' + fetchIdAnimal + '')
-        .get()
-        .then(function (querySnapshot) {
-          querySnapshot.forEach(function (doc) {
-            docId = doc.id;
-            pesoId = doc.data().pesoId; //recebe o pesoId que está no documento
-            newDataAnimal
-              ? doc.ref.update({ dataNascimento: newDataAnimal })
-              : '';
-            newRacaAnimal ? doc.ref.update({ racaAnimal: newRacaAnimal }) : '';
-            newSexoAnimal ? doc.ref.update({ sexoAnimal: newSexoAnimal }) : '';
-            newStatusAnimal
-              ? doc.ref.update({ statusAnimal: newStatusAnimal })
-              : '';
-          });
-        });
-      if (newPesoAnimal != showPesoAnimal && newPesoAnimal != null) {
-        var newPesoId = pesoId + 1; //soma 1 na variável pesoId
-        await animaisCollection
-          .doc(docId)
-          .set({ pesoId: newPesoId }, { merge: true }); //atualiza o pesoId do documento do animal
-        await db
-          .collection('animais')
-          .doc(docId)
-          .collection('pesoAnimal')
-          .doc('' + newPesoId + '')
-          .set({
-            idAnimal: fetchIdAnimal,
-            pesoAnimal: newPesoAnimal,
-            data: new Date(),
-          });
-      }
+      const novoPeso = newPesoAnimal != showPesoAnimal && newPesoAnimal != null;
+      const docId = await AnimalFirebaseCrud.Update(
+        fetchIdAnimal,
+        novoPeso ? newPesoAnimal : undefined,
+      );
+
       alert('Dados Editados com sucesso');
       navigation.navigate('Gerenciar Animais', { docId: docId });
     } catch (error) {
@@ -136,17 +94,7 @@ const ConsultarAnimal = ({ navigation }) => {
   };
   const Delete = async () => {
     try {
-      const animaisCollection = db.collection('animais');
-      const getAnimais = animaisCollection.where(
-        'idAnimal',
-        '==',
-        '' + fetchIdAnimal + '',
-      );
-      await getAnimais.get().then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          doc.ref.delete();
-        });
-      });
+      await AnimalFirebaseCrud.Delete(fetchIdAnimal);
       setFetchIdAnimal('');
       setShowDataAnimal('');
       setShowPesoAnimal('');
@@ -213,13 +161,14 @@ const ConsultarAnimal = ({ navigation }) => {
       />
 
       <Text style={css.label}>Sexo do Animal:</Text>
-      <TextInput
-        editable={editable}
-        style={css.input}
-        multiline={false}
-        defaultValue={showSexoAnimal}
-        value={newSexoAnimal}
-        onChangeText={(text) => setNewSexoAnimal(text)}
+      <Radio
+        selected={selected}
+        options={['Macho', 'Fêmea']}
+        horizontal={true}
+        onChangeSelect={(options, index) => {
+          setNewSexoAnimal(options);
+          setSelected(index);
+        }}
       />
 
       <Text style={css.label}>Raca:</Text>

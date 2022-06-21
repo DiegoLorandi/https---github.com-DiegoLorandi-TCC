@@ -7,10 +7,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-// import getRealm from '../../services/realm';
-import { db } from '../../../firebase';
 import TodoList from '../../components/TodoList';
 import { css } from './Css';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
+import CompradorFirebaseCrud from '../../utils/CompradorFirebaseCrud';
+import CompradorRealmCrud from '../../utils/CompradorRealmCrud';
 
 const GerenciarCompradores = ({ navigation, route }) => {
   const [idRemoved, setIdRemoved] = useState('');
@@ -28,45 +29,24 @@ const GerenciarCompradores = ({ navigation, route }) => {
 
   async function getCompradores() {
     setLoading(true);
-    const compradoresCollection = db.collection('compradores');
-    const getCompradores = await compradoresCollection.get();
     var allCompradores = [];
-    getCompradores.forEach(async (doc) => {
-      if (doc.id) {
-        allCompradores.push({
-          cpf: doc.id,
-          telefone: doc.data().telefone,
-          nome: doc.data().nome,
-          cep: doc.data().cep,
-          numero: doc.data().numero,
-          rua: doc.data().rua,
-          bairro: doc.data().bairro,
-          municipio: doc.data().municipio,
-          estado: doc.data().estado,
-          email: doc.data().email,
-        });
-      }
-    });
+    if (NetInfoHelper.isConnected()) {
+      allCompradores = await CompradorFirebaseCrud.Read();
+    } else {
+      // Offline
+      allCompradores = await CompradorRealmCrud.Read();
+    }
     setLoading(false);
     setCompradores(allCompradores);
   }
 
   async function deleteData(comprador) {
-    const compradoresCollection = db.collection('compradores');
-    const getComprador = compradoresCollection.where(
-      'email',
-      '==',
-      '' + comprador.email + '',
-    );
-    await getComprador.get().then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        setCompradores(currentCompradores);
-        setIdRemoved(doc.id);
-        let currentCompradores = compradores.filter(
-          (currentComprador) => currentComprador.email != comprador.email,
-        );
-        doc.ref.delete();
-      });
+    CompradorFirebaseCrud.Delete(comprador, (doc) => {
+      let currentCompradores = compradores.filter(
+        (currentComprador) => currentComprador.email != comprador.email,
+      );
+      setCompradores(currentCompradores);
+      setIdRemoved(doc.id);
     });
   }
 
@@ -139,12 +119,12 @@ const GerenciarCompradores = ({ navigation, route }) => {
           marginBottom: 10,
         }}
       >
-        Nenhum animal cadastrado.
+        Nenhum comprador cadastrado.
       </Text>
       <Button
         style={{ marginTop: 20 }}
-        title="Cadastre um animal"
-        onPress={() => navigation.navigate('Cadastrar Animal')}
+        title="Cadastre um comprador"
+        onPress={() => navigation.navigate('Cadastrar Comprador')}
       ></Button>
     </>
   );

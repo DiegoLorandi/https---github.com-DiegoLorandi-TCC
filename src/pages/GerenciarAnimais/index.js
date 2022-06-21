@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 // import getRealm from '../../services/realm';
-import { db } from '../../../firebase';
+import { db } from '../../services/firebase';
 import TodoList from '../../components/TodoList';
 import { css } from './Css';
 import NetInfoHelper from '../../helpers/NetInfoHelper';
@@ -29,7 +29,6 @@ const GerenciarAnimais = ({ navigation, route }) => {
   }, [route, idRemoved]);
 
   async function getAnimais() {
-    console.log('getAnimais!');
     // Online
     if (NetInfoHelper.isConnected()) {
       setLoading(true);

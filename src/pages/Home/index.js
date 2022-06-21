@@ -1,6 +1,6 @@
 import { View, Button, TouchableOpacity, Text } from 'react-native';
 import * as React from 'react';
-import { auth } from '../../../firebase';
+import { auth } from '../../services/firebase';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import NetInfoHelper from '../../helpers/NetInfoHelper';
 import getRealm from '../../services/realm';

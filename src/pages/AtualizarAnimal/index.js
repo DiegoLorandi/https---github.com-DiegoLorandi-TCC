@@ -1,4 +1,4 @@
-import { db } from '../../../firebase';
+import { db } from '../../services/firebase';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import MaskInput from 'react-native-mask-input';
 import Radio from '../../components/Ratio';
 import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
+import AnimalFirebaseCrud from '../../utils/AnimalFirebaseCrud';
 
 const AtualizarAnimal = (props) => {
   const navigation = props.navigation;
@@ -32,59 +33,25 @@ const AtualizarAnimal = (props) => {
     setNewDataAnimal(animal.dataAnimalBuscado);
     setNewRacaAnimal(animal.racaAnimalBuscado);
     setcurrentPesoId(animal.pesoId);
-    (async function () {
-      const animaisCollection = db.collection('animais');
-      var getPesoAnimal = await animaisCollection
-        .doc(animal.id)
-        .collection('pesoAnimal')
-        .doc('' + animal.pesoId + '')
-        .get();
-      setNewPesoAnimal(getPesoAnimal.data().pesoAnimal);
-      animal.pesoAnimal = getPesoAnimal.data().pesoAnimal;
-    })();
+    getAnimal(animal);
   }, [props.route]);
 
+  async function getAnimal(animal) {
+    const animalData = await AnimalFirebaseCrud.Read(animal.idAnimal);
+    setNewPesoAnimal(animalData.pesoAnimal);
+    animal.pesoAnimal = animalData.pesoAnimal;
+  }
+
   const Update = async () => {
-    const animaisCollection = db.collection('animais');
+    const novoPeso =
+      newPesoAnimal != animal.pesoAnimal && newPesoAnimal != null;
     try {
-      var docId = '';
-      var pesoId;
-      await animaisCollection
-        .where('idAnimal', '==', '' + animal.idAnimal + '')
-        .get()
-        .then(function (querySnapshot) {
-          querySnapshot.forEach(function (doc) {
-            docId = doc.id;
-            pesoId = doc.data().pesoId; //recebe o pesoId que está no documento
-            newDataAnimal
-              ? doc.ref.update({ dataNascimento: newDataAnimal })
-              : '';
-            newRacaAnimal ? doc.ref.update({ racaAnimal: newRacaAnimal }) : '';
-            newSexoAnimal ? doc.ref.update({ sexoAnimal: newSexoAnimal }) : '';
-            newStatusAnimal
-              ? doc.ref.update({ statusAnimal: newStatusAnimal })
-              : '';
-          });
-        });
-      if (newPesoAnimal != animal.pesoAnimal && newPesoAnimal != null) {
-        var newPesoId = pesoId + 1; //soma 1 na variável pesoId
-        setcurrentPesoId(newPesoId);
-        await animaisCollection
-          .doc(docId)
-          .set({ pesoId: newPesoId }, { merge: true }); //atualiza o pesoId do documento do animal
-        await db
-          .collection('animais')
-          .doc(docId)
-          .collection('pesoAnimal')
-          .doc('' + newPesoId + '')
-          .set({
-            idAnimal: newIdAnimal,
-            pesoAnimal: newPesoAnimal,
-            data: new Date(),
-          });
-      }
+      const docId = await AnimalFirebaseCrud.Update(
+        animal.idAnimal,
+        novoPeso ? newPesoAnimal : undefined,
+      );
       alert('Dados Atualizados com sucesso!');
-      navigation.navigate('Gerenciar Animais', animal);
+      navigation.navigate('Gerenciar Animais', { docId: docId });
     } catch (error) {
       alert(error);
     }

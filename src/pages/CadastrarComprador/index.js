@@ -1,4 +1,3 @@
-import { db } from '../../../firebase';
 import {
   View,
   Text,
@@ -11,7 +10,8 @@ import MaskInput from 'react-native-mask-input';
 import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
 import NetInfoHelper from '../../helpers/NetInfoHelper';
-import getRealm from '../../services/realm';
+import CompradorFirebaseCrud from '../../utils/CompradorFirebaseCrud';
+import CompradorRealmCrud from '../../utils/CompradorRealmCrud';
 
 const CadastrarComprador = ({ navigation }) => {
   const [newCpfComprador, setNewCpfComprador] = useState('');
@@ -27,7 +27,7 @@ const CadastrarComprador = ({ navigation }) => {
 
   const [newEmailComprador, setNewEmailComprador] = useState('');
 
-  const Create = async () => {
+  function Create() {
     const data = {
       nome: newNomeComprador,
       telefone: newTelefoneComprador,
@@ -38,26 +38,13 @@ const CadastrarComprador = ({ navigation }) => {
       municipio: newMunicipioComprador,
       estado: newEstadoComprador,
       email: newEmailComprador,
+      cpf: newCpfComprador,
     };
-
+    // Cadastra no firebase
     if (NetInfoHelper.isConnected()) {
-      if (
-        newCpfComprador == '' ||
-        newTelefoneComprador == '' ||
-        newNomeComprador == '' ||
-        newCepComprador == '' ||
-        newNumeroComprador == '' ||
-        newRuaComprador == '' ||
-        newBairroComprador == '' ||
-        newMunicipioComprador == '' ||
-        newEstadoComprador == '' ||
-        newEmailComprador == ''
-      ) {
-        alert('Preencha todos os dados corretamente');
-      } else {
-        const compradoresCollection = db.collection('compradores');
-        try {
-          await compradoresCollection.doc(newCpfComprador).set(data);
+      console.log('chamado!');
+      CompradorFirebaseCrud.Create(data)
+        .then(() => {
           setNewCpfComprador('');
           setNewNomeComprador('');
           setNewTelefoneComprador('');
@@ -69,23 +56,39 @@ const CadastrarComprador = ({ navigation }) => {
           setNewEstadoComprador('');
           setNewEmailComprador('');
           alert('Comprador cadastrado com sucesso');
-          navigation.goBack();
-        } catch (error) {
-          alert(error.message);
-        }
-      }
-    } else {
-      const realm = await getRealm();
-      realm.write(() => {
-        realm.create('Compradores', {
-          ...data,
-          cpf: newCpfComprador,
-          tipoDado: 'cadastro',
+        })
+        .catch((error) => {
+          if (error != false) {
+            alert(error);
+          } else {
+            alert('Falha ao cadastrar comprador.');
+          }
         });
-      });
-      realm.close();
+    } else {
+      // Cadastra no realmDB
+      CompradorRealmCrud.Create({ ...data })
+        .then(() => {
+          setNewCpfComprador('');
+          setNewNomeComprador('');
+          setNewTelefoneComprador('');
+          setNewCepComprador('');
+          setNewNumeroComprador('');
+          setNewRuaComprador('');
+          setNewBairroComprador('');
+          setNewMunicipioComprador('');
+          setNewEstadoComprador('');
+          setNewEmailComprador('');
+          alert('Comprador cadastrado com sucesso');
+        })
+        .catch((error) => {
+          if (error != false) {
+            alert(error);
+          } else {
+            alert('Falha ao cadastrar comprador');
+          }
+        });
     }
-  };
+  }
 
   return (
     <ScrollView style={{ paddingLeft: 20, paddingRight: 20 }}>

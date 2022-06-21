@@ -4,14 +4,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   Alert,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { css } from './Css';
-import { db } from '../../../firebase';
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { db } from '../../services/firebase';
+import NetInfoHelper from '../../helpers/NetInfoHelper';
 
 const AtualizarComprador = ({ navigation, route }) => {
   var compradorDados = route.params;
@@ -38,9 +37,7 @@ const AtualizarComprador = ({ navigation, route }) => {
   const [newEstadoComprador, setNewEstadoComprador] = useState(null);
   const [newEmailComprador, setNewEmailComprador] = useState(null);
 
-  const [notFinded, setNotFinded] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setFetchCpfComprador(compradorDados.cpf);
@@ -56,34 +53,10 @@ const AtualizarComprador = ({ navigation, route }) => {
     setEditable(true);
   }, [route]);
 
-  const Read = async () => {
-    setLoading(true);
-    try {
-      const compradoresCollection = db.collection('compradores');
-      var getCompradores = await compradoresCollection
-        .doc(fetchCpfComprador)
-        .get();
-
-      setShowTelefoneComprador(getCompradores.data().telefone);
-      setShowNomeComprador(getCompradores.data().nome);
-      setShowCepComprador(getCompradores.data().cep);
-      setShowNumeroComprador(getCompradores.data().numero);
-      setShowRuaComprador(getCompradores.data().rua);
-      setShowBairroComprador(getCompradores.data().bairro);
-      setShowMunicipioComprador(getCompradores.data().municipio);
-      setShowEstadoComprador(getCompradores.data().estado);
-      setShowEmailComprador(getCompradores.data().email);
-      setEditable(true);
-      setSearched(true);
-      setNotFinded(false);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setNotFinded(true);
-    }
-  };
-
   const Update = async () => {
+    if (NetInfoHelper.isConnected() == false) {
+      alert('É necessário estar conectado para executar essa ação!');
+    }
     const compradoresCollection = db.collection('compradores');
     try {
       const teste = compradoresCollection.doc('' + fetchCpfComprador + '');
@@ -145,6 +118,10 @@ const AtualizarComprador = ({ navigation, route }) => {
   };
 
   const Delete = async () => {
+    if (NetInfoHelper.isConnected()) {
+      alert('É necessário estar conectado para executar essa ação!');
+    }
+
     try {
       const compradoresCollection = db.collection('compradores');
       await compradoresCollection.doc(fetchCpfComprador).delete();

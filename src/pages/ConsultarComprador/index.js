@@ -10,9 +10,11 @@ import {
 import React, { useState } from 'react';
 import * as Animatable from 'react-native-animatable';
 import { css } from './Css';
-import { db } from '../../../firebase';
+import { db } from '../../services/firebase';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import NetInfoHelper from '../../helpers/NetInfoHelper';
+import CompradorFirebaseCrud from '../../utils/CompradorFirebaseCrud';
+import CompradorRealmCrud from '../../utils/CompradorRealmCrud';
 
 const ConsultarComprador = ({ navigation }) => {
   const [editable, setEditable] = useState(false);
@@ -40,44 +42,58 @@ const ConsultarComprador = ({ navigation }) => {
   const [notFinded, setNotFinded] = useState(false);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [compradorData, setCompradorData] = useState(undefined);
 
   const Read = async () => {
     if (NetInfoHelper.isConnected() === false) {
-      alert(
-        'É necessário estar conectado a internet para consultar um comprador',
-      );
-      return;
-    }
-    setLoading(true);
-    try {
-      const compradoresCollection = db.collection('compradores');
-      var getCompradores = await compradoresCollection
-        .doc(fetchCpfComprador)
-        .get();
-
-      setShowTelefoneComprador(getCompradores.data().telefone);
-      setShowNomeComprador(getCompradores.data().nome);
-      setShowCepComprador(getCompradores.data().cep);
-      setShowNumeroComprador(getCompradores.data().numero);
-      setShowRuaComprador(getCompradores.data().rua);
-      setShowBairroComprador(getCompradores.data().bairro);
-      setShowMunicipioComprador(getCompradores.data().municipio);
-      setShowEstadoComprador(getCompradores.data().estado);
-      setShowEmailComprador(getCompradores.data().email);
-      setEditable(true);
-      setSearched(true);
-      setNotFinded(false);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setNotFinded(true);
+      const comprador = CompradorRealmCrud.Read(fetchCpfComprador);
+      if (comprador.length > 0) {
+        setDadosComprador(comprador);
+        setEditable(true);
+        setSearched(true);
+        setNotFinded(false);
+        setLoading(false);
+      } else {
+        setLoading(false);
+        setNotFinded(true);
+      }
+    } else {
+      setLoading(true);
+      try {
+        const getComprador = await CompradorFirebaseCrud.Read(
+          fetchCpfComprador,
+        );
+        setDadosComprador(getComprador.data());
+        setEditable(true);
+        setSearched(true);
+        setNotFinded(false);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+        setNotFinded(true);
+      }
     }
   };
+
+  function setDadosComprador(data) {
+    setCompradorData(data);
+    setShowTelefoneComprador(data.telefone);
+    setShowNomeComprador(data.nome);
+    setShowCepComprador(data.cep);
+    setShowNumeroComprador(data.numero);
+    setShowRuaComprador(data.rua);
+    setShowBairroComprador(data.bairro);
+    setShowMunicipioComprador(data.municipio);
+    setShowEstadoComprador(data.estado);
+    setShowEmailComprador(data.email);
+  }
+
   const Update = async () => {
     const compradoresCollection = db.collection('compradores');
     try {
-      const teste = compradoresCollection.doc('' + fetchCpfComprador + '');
-      const doc = await teste.get(); //verifica se o CPF informado corresponde a um documento existente
+      const comprador = compradoresCollection.doc('' + fetchCpfComprador + '');
+      const doc = await comprador.get(); //verifica se o CPF informado corresponde a um documento existente
       if (!doc.exists) {
         alert('CPF não existe na base de dados');
       } else {
@@ -136,22 +152,21 @@ const ConsultarComprador = ({ navigation }) => {
 
   const Delete = async () => {
     try {
-      const compradoresCollection = db.collection('compradores');
-      await compradoresCollection.doc(fetchCpfComprador).delete();
-
-      setFetchCpfComprador('');
-      setShowTelefoneComprador('');
-      setShowNomeComprador('');
-      setShowCepComprador('');
-      setShowNumeroComprador('');
-      setShowRuaComprador('');
-      setShowBairroComprador('');
-      setShowMunicipioComprador('');
-      setShowEstadoComprador('');
-      setShowEmailComprador('');
-      setEditable(false);
-      alert('Comprador Excluido');
-      navigation.goBack();
+      CompradorFirebaseCrud.Delete(compradorData, () => {
+        setFetchCpfComprador('');
+        setShowTelefoneComprador('');
+        setShowNomeComprador('');
+        setShowCepComprador('');
+        setShowNumeroComprador('');
+        setShowRuaComprador('');
+        setShowBairroComprador('');
+        setShowMunicipioComprador('');
+        setShowEstadoComprador('');
+        setShowEmailComprador('');
+        setEditable(false);
+        alert('Comprador Excluido');
+        navigation.goBack();
+      });
     } catch (error) {
       alert(error.message);
     }

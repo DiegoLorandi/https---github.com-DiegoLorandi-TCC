@@ -9,7 +9,7 @@ import {
 import * as React from 'react';
 import { css } from './Css';
 import * as Animatable from 'react-native-animatable';
-import { auth } from '../../../firebase';
+import { auth } from '../../services/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import getRealm from '../../services/realm';
 
@@ -63,13 +63,14 @@ const Login = ({ navigation }) => {
 
   const handleLogin = () => {
     // Login
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        registerLoginRealm(user.uid);
-      })
-      .catch((error) => alert(error.message));
+    navigation.navigate('Home');
+    // auth
+    //   .signInWithEmailAndPassword(email, password)
+    //   .then((userCredential) => {
+    //     const user = userCredential.user;
+    //     registerLoginRealm(user.uid);
+    //   })
+    //   .catch((error) => alert(error.message));
   };
 
   async function registerLoginRealm(uid) {
